@@ -1,0 +1,77 @@
+{
+	"name": "npm-link-cli",
+	"version": "0.0.0",
+	"description": "Get a link to a given npm package.",
+	"keywords": [
+		"cli",
+		"cli-app",
+		"command-line",
+		"package",
+		"npm",
+		"github",
+		"gh",
+		"repo",
+		"repository",
+		"cwd",
+		"link",
+		"clipboard"
+	],
+	"license": "MIT",
+	"repository": "tommy-mitchell/npm-link-cli",
+	"author": {
+		"name": "Tommy Mitchell",
+		"url": "https://tommymitchell.io"
+	},
+	"type": "module",
+	"bin": {
+		"npm-link": "dist/cli.js"
+	},
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": "^18.18 || ^20.8 || ^21"
+	},
+	"scripts": {
+		"prepare": "npm run build",
+		"build": "tsc -p tsconfig.build.json && execify --all",
+		"lint": "xo",
+		"format": "dprint fmt && xo --fix",
+		"test": "tsc --noEmit && c8 ava"
+	},
+	"ava": {
+		"extensions": {
+			"ts": "module"
+		},
+		"nodeArguments": [
+			"--import=tsimp"
+		]
+	},
+	"dependencies": {
+		"clipboardy": "^4.0.0",
+		"github-url-from-git": "^1.5.0",
+		"is-url-superb": "^6.1.0",
+		"log-symbols": "^6.0.0",
+		"meow": "^13.2.0",
+		"package-json": "^9.0.0",
+		"read-package-up": "^11.0.0",
+		"terminal-link": "^3.0.0"
+	},
+	"devDependencies": {
+		"@tommy-mitchell/dprint-config": "^0.1.0",
+		"@tommy-mitchell/eslint-config-xo": "^0.1.1",
+		"@tommy-mitchell/tsconfig": "^2.1.0",
+		"@types/github-url-from-git": "^1.5.3",
+		"@types/node": "^18.18",
+		"ava": "^6.1.1",
+		"c8": "^9.1.0",
+		"execa": "^8.0.1",
+		"execify-cli": "beta",
+		"get-bin-path": "^11.0.0",
+		"is-executable": "^2.0.1",
+		"tsimp": "^2.0.11",
+		"type-fest": "^4.10.2",
+		"typescript": "~5.3.3",
+		"xo": "^0.57.0"
+	}
+}
