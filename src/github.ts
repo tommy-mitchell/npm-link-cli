@@ -1,12 +1,10 @@
-import type { FullMetadata } from "package-json";
+import type { FullVersion } from "package-json";
 import githubUrlFromGit from "github-url-from-git";
 import isUrl from "is-url-superb";
 import logSymbols from "log-symbols";
 
 // From https://github.com/sindresorhus/npm-home
-export const getGitHubLink = async (name: string, packageData: FullMetadata) => {
-	const { repository } = packageData;
-
+export const getGitHubLink = async (name: string, { repository, homepage }: FullVersion) => {
 	if (!repository) {
 		return {};
 	}
@@ -28,12 +26,12 @@ export const getGitHubLink = async (name: string, packageData: FullMetadata) => 
 			);
 			didWarn = true;
 
-			if (!packageData.homepage) {
+			if (!homepage) {
 				console.error(`${logSymbols.error} No \`homepage\` field found in package.json.`);
 				return {};
 			}
 
-			link = packageData.homepage;
+			link = homepage;
 		}
 	}
 
