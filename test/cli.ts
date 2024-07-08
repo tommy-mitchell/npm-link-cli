@@ -1,38 +1,23 @@
-import anyTest, { type TestFn } from "ava";
-import { execa } from "execa";
-import { getBinPath } from "get-bin-path";
-import { isExecutable } from "is-executable";
+import { test, verifyCli } from "./_util.js";
 
-const test = anyTest as TestFn<{
-	binPath: string;
-}>;
+test("single input - copies to clipboard", verifyCli, "meow");
+test("no input - outputs current package and copies to clipboard", verifyCli, "");
+test("multiple inputs", verifyCli, "meow np nnnope");
 
-test.before("setup context", async t => {
-	const binPath = await getBinPath(); // eslint-disable-line unicorn/prevent-abbreviations
-	t.truthy(binPath, "No bin path found!");
+for (const flag of ["--help", "-h"]) {
+	test(`shows help - ${flag}`, verifyCli, [flag]);
+}
 
-	t.context.binPath = binPath!.replace("dist", "src").replace(".js", ".ts");
-	t.true(await isExecutable(t.context.binPath), "Source binary not executable!");
-});
+for (const flag of ["--short", "-s"]) {
+	test(`short link - ${flag}`, verifyCli, ["meow", "np", flag]);
+}
 
-test("main", async t => {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const result = await execa(t.context.binPath, ["meow"], { env: { NO_COLOR: "1" } });
+for (const flag of ["--github", "-g"]) {
+	test(`GitHub link - ${flag}`, verifyCli, ["meow", "np", flag]);
+}
 
-	t.like(result, {
-		stdout: "ℹ meow: https://www.npmjs.com/package/meow\n\n✔ Copied link to clipboard!",
-		exitCode: 0,
-	});
-});
-
-test.todo("multiple");
-test.todo("--short");
-test.todo("-s");
-test.todo("--github");
-test.todo("-g");
-test.todo("no network connection?");
-test.todo("package not found");
-test.todo("no input - outputs current package");
+test.todo("github: errors");
+test.todo("no network connection");
 test.todo("no input - not in project");
 test.todo("linkifies");
 test.todo("copies to clipboard");

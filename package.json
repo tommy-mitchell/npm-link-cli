@@ -45,7 +45,10 @@
 		},
 		"nodeArguments": [
 			"--import=tsimp"
-		]
+		],
+		"environmentVariables": {
+			"concurrency": "10"
+		}
 	},
 	"dependencies": {
 		"clipboardy": "^4.0.0",
@@ -58,6 +61,7 @@
 		"terminal-link": "^3.0.0"
 	},
 	"devDependencies": {
+		"@shopify/semaphore": "^3.1.0",
 		"@tommy-mitchell/dprint-config": "^0.1.1",
 		"@tommy-mitchell/eslint-config-xo": "^0.3.1",
 		"@tommy-mitchell/tsconfig": "^2.1.0",
