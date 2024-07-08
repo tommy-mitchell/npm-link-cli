@@ -8,8 +8,8 @@ import logSymbols from "log-symbols";
 import { getPackage } from "./package.js";
 import { getGitHubLink } from "./github.js";
 
-const cli = meow(
-	`
+// dprint-ignore
+const cli = meow(`
 	Usage
 	  $ npm-link [package-name] […]
 
@@ -32,26 +32,24 @@ const cli = meow(
 
 	  $ npm-link ava --github
 	  ℹ ava: https://github.com/avajs/ava
-`,
-	{
-		importMeta: import.meta,
-		description: false,
-		flags: {
-			help: {
-				type: "boolean",
-				shortFlag: "h",
-			},
-			short: {
-				type: "boolean",
-				shortFlag: "s",
-			},
-			github: {
-				type: "boolean",
-				shortFlag: "g",
-			},
+`, {
+	importMeta: import.meta,
+	description: false,
+	flags: {
+		help: {
+			type: "boolean",
+			shortFlag: "h",
+		},
+		short: {
+			type: "boolean",
+			shortFlag: "s",
+		},
+		github: {
+			type: "boolean",
+			shortFlag: "g",
 		},
 	},
-);
+});
 
 type Link = {
 	name: string;
@@ -106,15 +104,16 @@ if (shouldAddBreak) {
 }
 
 for (const { name, link } of links) {
-	if (link) {
-		const linkified = terminalLink(link, link, { fallback: () => link });
-		console.log(`${logSymbols.info} ${name}: ${linkified}`);
-
-		if (cli.input.length < 2) {
-			await clipboard.write(link); // eslint-disable-line no-await-in-loop
-			console.log(`\n${logSymbols.success} Copied link to clipboard!`);
-		}
-	} else {
+	if (!link) {
 		console.log(`${logSymbols.error} ${name}: No link found`);
+		continue;
+	}
+
+	const linkified = terminalLink(link, link, { fallback: () => link });
+	console.log(`${logSymbols.info} ${name}: ${linkified}`);
+
+	if (cli.input.length < 2) {
+		await clipboard.write(link); // eslint-disable-line no-await-in-loop
+		console.log(`\n${logSymbols.success} Copied link to clipboard!`);
 	}
 }

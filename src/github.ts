@@ -16,14 +16,12 @@ export const getGitHubLink = async (name: string, { repository, homepage }: Full
 		link = repository.url;
 
 		if (isUrl(link) && /^https?:\/\//.test(link)) {
-			console.error(
-				`${logSymbols.error} The \`repository\` field in package.json should point to a Git repo and not a website. Please open an issue or pull request on \`${name}\`.`,
-			);
+			// dprint-ignore
+			console.error(`${logSymbols.error} The \`repository\` field in package.json should point to a Git repo and not a website. Please open an issue or pull request on \`${name}\`.`);
 			didWarn = true;
 		} else {
-			console.error(
-				`${logSymbols.error} The \`repository\` field in package.json is invalid. Please open an issue or pull request on \`${name}\`. Using the \`homepage\` field instead.`,
-			);
+			// dprint-ignore
+			console.error(`${logSymbols.error} The \`repository\` field in package.json is invalid. Please open an issue or pull request on \`${name}\`. Using the \`homepage\` field instead.`);
 			didWarn = true;
 
 			if (!homepage) {
