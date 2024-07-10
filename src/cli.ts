@@ -92,7 +92,7 @@ if (cli.input.length > 0) {
 	const result = await readPackageUp();
 
 	if (!result) {
-		console.error(`${logSymbols.error} You must be in an npm package`);
+		console.error(`${logSymbols.error} You must be in an npm package.`);
 		process.exit(1);
 	}
 

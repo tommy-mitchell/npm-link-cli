@@ -30,18 +30,21 @@ test.afterEach.always(async t => {
 
 type Input = string | string[];
 
-type VerifyArgs = {
+type Options = {
+	cwd?: string;
+};
+
+type VerifyArgs = Options & {
 	t: ExecutionContext<TestContext>;
 	input: Input;
 	passes: boolean;
 };
 
-const _verify = async ({ t, input = [], passes }: VerifyArgs) => {
+const _verify = async ({ t, input = [], cwd, passes }: VerifyArgs) => {
 	const args = Array.isArray(input) ? input : parseCommandString(input);
 	const expectedExitCode = passes ? 0 : 1;
 
-	const { all: output, exitCode } = await execa(t.context.binPath, args);
-	/// t.log(output);
+	const { all: output, exitCode } = await execa(t.context.binPath, args, { cwd });
 
 	const assertions = await t.try(tt => {
 		tt.log("args:", args);
@@ -52,6 +55,10 @@ const _verify = async ({ t, input = [], passes }: VerifyArgs) => {
 	assertions.commit({ retainLogs: !assertions.passed });
 };
 
-export const verifyCli = test.macro(async (t, args: Input) => _verify({ t, input: args, passes: true }));
+export const verifyCli = test.macro(async (t, args: Input, options?: Options) => (
+	_verify({ ...options, t, input: args, passes: true })
+));
 
-export const verifyCliFails = test.macro(async (t, args: Input) => _verify({ t, input: args, passes: false }));
+export const verifyCliFails = test.macro(async (t, args: Input, options?: Options) => (
+	_verify({ ...options, t, input: args, passes: false })
+));
