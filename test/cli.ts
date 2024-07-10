@@ -21,7 +21,7 @@ for (const flag of ["--github", "-g"]) {
 
 test("linkifies", async t => {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const { stdout } = await execa(t.context.binPath, { env: { FORCE_COLOR: "1" } });
+	const { stdout } = await execa(t.context.binPath, { env: { FORCE_HYPERLINK: "1" } });
 	t.true(hasAnsi(stdout));
 });
 
