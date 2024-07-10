@@ -67,7 +67,7 @@ const getLinks = async (names: string[]): Promise<Link[]> => (
 		}
 
 		if (cli.flags.github) {
-			const { link, didWarn } = await getGitHubLink(name, packageData);
+			const { link, didWarn } = await getGitHubLink(packageData);
 
 			if (didWarn) {
 				shouldAddBreak = true;

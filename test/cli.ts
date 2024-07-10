@@ -16,8 +16,9 @@ for (const flag of ["--github", "-g"]) {
 	test(`GitHub link - ${flag}`, verifyCli, ["meow", "np", flag]);
 }
 
-test.todo("github: errors");
 test.todo("no network connection");
 test.todo("no input - not in project");
 test.todo("linkifies");
 test.todo("copies to clipboard");
+
+// TODO: prune unused snapshots?

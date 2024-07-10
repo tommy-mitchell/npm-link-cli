@@ -4,7 +4,7 @@ import isUrl from "is-url-superb";
 import logSymbols from "log-symbols";
 
 // From https://github.com/sindresorhus/npm-home
-export const getGitHubLink = async (name: string, { repository, homepage }: FullVersion) => {
+export const getGitHubLink = async ({ name, repository, homepage }: FullVersion) => {
 	if (!repository) {
 		return {};
 	}
