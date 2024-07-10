@@ -1,9 +1,8 @@
 import process from "node:process";
 import anyTest, { type ExecutionContext, type TestFn } from "ava";
-import { execa as _execa, parseCommandString } from "execa";
-import { getBinPath } from "get-bin-path";
-import { isExecutable } from "is-executable";
+import { getExecutableBinPath } from "get-executable-bin-path";
 import { type Permit, Semaphore } from "@shopify/semaphore";
+import { execa as _execa, parseCommandString } from "execa";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const execa = _execa({ all: true, reject: false, env: { NO_COLOR: "1" } });
@@ -16,11 +15,7 @@ type TestContext = {
 export const test = anyTest as TestFn<TestContext>;
 
 test.before("setup context", async t => {
-	const binPath = await getBinPath(); // eslint-disable-line unicorn/prevent-abbreviations
-	t.truthy(binPath, "No bin path found!");
-
-	t.context.binPath = binPath!.replace("dist", "src").replace(".js", ".ts");
-	t.true(await isExecutable(t.context.binPath), "Source binary not executable!");
+	t.context.binPath = await getExecutableBinPath();
 });
 
 const semaphore = new Semaphore(Number(process.env["concurrency"]) || 5);
