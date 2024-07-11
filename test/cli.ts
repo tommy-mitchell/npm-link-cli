@@ -1,3 +1,4 @@
+import clipboard from "clipboardy";
 import { execa } from "execa";
 import hasAnsi from "has-ansi";
 import { test, verifyCli, verifyCliFails } from "./_util.js";
@@ -25,5 +26,10 @@ test("linkifies", async t => {
 	t.true(hasAnsi(stdout));
 });
 
+test.serial("copies to clipboard", async t => {
+	await execa(t.context.binPath);
+	const link = await clipboard.read();
+	t.is(link, "https://www.npmjs.com/package/npm-link-cli");
+});
+
 test.todo("no network connection");
-test.todo("copies to clipboard");
