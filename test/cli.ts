@@ -26,7 +26,7 @@ test("linkifies", async t => {
 	t.true(hasAnsi(stdout));
 });
 
-test.serial.skip("copies to clipboard", async t => {
+test.serial("copies to clipboard", async t => {
 	await execa(t.context.binPath);
 	const link = await clipboard.read();
 	t.is(link, "https://www.npmjs.com/package/npm-link-cli");

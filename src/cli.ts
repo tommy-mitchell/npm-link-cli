@@ -113,7 +113,9 @@ for (const { name, link } of links) {
 	console.log(`${logSymbols.info} ${name}: ${linkified}`);
 
 	if (cli.input.length < 2) {
-		await clipboard.write(link); // eslint-disable-line no-await-in-loop
-		console.log(`\n${logSymbols.success} Copied link to clipboard!`);
+		try {
+			await clipboard.write(link); // eslint-disable-line no-await-in-loop
+			console.log(`\n${logSymbols.success} Copied link to clipboard!`);
+		} catch {}
 	}
 }
