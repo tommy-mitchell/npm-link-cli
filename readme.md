@@ -10,11 +10,13 @@ npm install --global npm-link-cli
 
 <details>
 <summary>Other Package Managers</summary>
+<p>
 
 ```sh
 yarn global add npm-link-cli
 ```
 
+</p>
 </details>
 
 ## Usage
