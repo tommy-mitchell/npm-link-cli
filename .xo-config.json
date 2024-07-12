@@ -1,3 +1,6 @@
 {
-	"extends": ["@tommy-mitchell/xo"]
+	"extends": ["@tommy-mitchell/xo"],
+	"rules": {
+		"unicorn/no-process-exit": "off"
+	}
 }

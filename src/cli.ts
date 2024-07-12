@@ -8,8 +8,8 @@ import logSymbols from "log-symbols";
 import { getPackage } from "./package.js";
 import { getGitHubLink } from "./github.js";
 
-const cli = meow(
-	`
+// dprint-ignore
+const cli = meow(`
 	Usage
 	  $ npm-link [package-name] […]
 
@@ -32,26 +32,24 @@ const cli = meow(
 
 	  $ npm-link ava --github
 	  ℹ ava: https://github.com/avajs/ava
-`,
-	{
-		importMeta: import.meta,
-		description: false,
-		flags: {
-			help: {
-				type: "boolean",
-				shortFlag: "h",
-			},
-			short: {
-				type: "boolean",
-				shortFlag: "s",
-			},
-			github: {
-				type: "boolean",
-				shortFlag: "g",
-			},
+`, {
+	importMeta: import.meta,
+	description: false,
+	flags: {
+		help: {
+			type: "boolean",
+			shortFlag: "h",
+		},
+		short: {
+			type: "boolean",
+			shortFlag: "s",
+		},
+		github: {
+			type: "boolean",
+			shortFlag: "g",
 		},
 	},
-);
+});
 
 type Link = {
 	name: string;
@@ -69,7 +67,7 @@ const getLinks = async (names: string[]): Promise<Link[]> => (
 		}
 
 		if (cli.flags.github) {
-			const { link, didWarn } = await getGitHubLink(name, packageData);
+			const { link, didWarn } = await getGitHubLink(packageData);
 
 			if (didWarn) {
 				shouldAddBreak = true;
@@ -94,7 +92,7 @@ if (cli.input.length > 0) {
 	const result = await readPackageUp();
 
 	if (!result) {
-		console.error(`${logSymbols.error} You must be in an npm package`);
+		console.error(`${logSymbols.error} You must be in an npm package.`);
 		process.exit(1);
 	}
 
@@ -106,15 +104,18 @@ if (shouldAddBreak) {
 }
 
 for (const { name, link } of links) {
-	if (link) {
-		const linkified = terminalLink(link, link, { fallback: () => link });
-		console.log(`${logSymbols.info} ${name}: ${linkified}`);
+	if (!link) {
+		console.log(`${logSymbols.error} ${name}: No link found`);
+		continue;
+	}
 
-		if (cli.input.length < 2) {
+	const linkified = terminalLink(link, link, { fallback: () => link });
+	console.log(`${logSymbols.info} ${name}: ${linkified}`);
+
+	if (cli.input.length < 2) {
+		try {
 			await clipboard.write(link); // eslint-disable-line no-await-in-loop
 			console.log(`\n${logSymbols.success} Copied link to clipboard!`);
-		}
-	} else {
-		console.log(`${logSymbols.error} ${name}: No link found`);
+		} catch {}
 	}
 }

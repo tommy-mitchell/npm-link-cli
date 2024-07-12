@@ -1,38 +1,35 @@
-import anyTest, { type TestFn } from "ava";
+import clipboard from "clipboardy";
 import { execa } from "execa";
-import { getBinPath } from "get-bin-path";
-import { isExecutable } from "is-executable";
+import hasAnsi from "has-ansi";
+import { test, verifyCli, verifyCliFails } from "./_util.js";
 
-const test = anyTest as TestFn<{
-	binPath: string;
-}>;
+test("single input - copies to clipboard", verifyCli, "meow");
+test("no input - outputs current package and copies to clipboard", verifyCli, "");
+test("no input - not in project", verifyCliFails, "", { cwd: "/" }); // TODO: temp dir?
+test("multiple inputs", verifyCli, "meow np nnnope");
 
-test.before("setup context", async t => {
-	const binPath = await getBinPath(); // eslint-disable-line unicorn/prevent-abbreviations
-	t.truthy(binPath, "No bin path found!");
+for (const flag of ["--help", "-h"]) {
+	test(`shows help - ${flag}`, verifyCli, [flag]);
+}
 
-	t.context.binPath = binPath!.replace("dist", "src").replace(".js", ".ts");
-	t.true(await isExecutable(t.context.binPath), "Source binary not executable!");
-});
+for (const flag of ["--short", "-s"]) {
+	test(`short link - ${flag}`, verifyCli, ["meow", "np", flag]);
+}
 
-test("main", async t => {
+for (const flag of ["--github", "-g"]) {
+	test(`GitHub link - ${flag}`, verifyCli, ["meow", "np", flag]);
+}
+
+test("linkifies", async t => {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const result = await execa(t.context.binPath, ["meow"], { env: { NO_COLOR: "1" } });
-
-	t.like(result, {
-		stdout: "ℹ meow: https://www.npmjs.com/package/meow\n\n✔ Copied link to clipboard!",
-		exitCode: 0,
-	});
+	const { stdout } = await execa(t.context.binPath, { env: { FORCE_HYPERLINK: "1" } });
+	t.true(hasAnsi(stdout));
 });
 
-test.todo("multiple");
-test.todo("--short");
-test.todo("-s");
-test.todo("--github");
-test.todo("-g");
-test.todo("no network connection?");
-test.todo("package not found");
-test.todo("no input - outputs current package");
-test.todo("no input - not in project");
-test.todo("linkifies");
-test.todo("copies to clipboard");
+test.serial("copies to clipboard", async t => {
+	await execa(t.context.binPath);
+	const link = await clipboard.read();
+	t.is(link, "https://www.npmjs.com/package/npm-link-cli");
+});
+
+test.todo("no network connection");

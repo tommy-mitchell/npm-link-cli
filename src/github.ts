@@ -1,12 +1,10 @@
-import type { FullMetadata } from "package-json";
+import type { FullVersion } from "package-json";
 import githubUrlFromGit from "github-url-from-git";
 import isUrl from "is-url-superb";
 import logSymbols from "log-symbols";
 
 // From https://github.com/sindresorhus/npm-home
-export const getGitHubLink = async (name: string, packageData: FullMetadata) => {
-	const { repository } = packageData;
-
+export const getGitHubLink = async ({ name, repository, homepage }: FullVersion) => {
 	if (!repository) {
 		return {};
 	}
@@ -18,22 +16,20 @@ export const getGitHubLink = async (name: string, packageData: FullMetadata) => 
 		link = repository.url;
 
 		if (isUrl(link) && /^https?:\/\//.test(link)) {
-			console.error(
-				`${logSymbols.error} The \`repository\` field in package.json should point to a Git repo and not a website. Please open an issue or pull request on \`${name}\`.`,
-			);
+			// dprint-ignore
+			console.error(`${logSymbols.error} The \`repository\` field in package.json should point to a Git repo and not a website. Please open an issue or pull request on \`${name}\`.`);
 			didWarn = true;
 		} else {
-			console.error(
-				`${logSymbols.error} The \`repository\` field in package.json is invalid. Please open an issue or pull request on \`${name}\`. Using the \`homepage\` field instead.`,
-			);
+			// dprint-ignore
+			console.error(`${logSymbols.error} The \`repository\` field in package.json is invalid. Please open an issue or pull request on \`${name}\`. Using the \`homepage\` field instead.`);
 			didWarn = true;
 
-			if (!packageData.homepage) {
+			if (!homepage) {
 				console.error(`${logSymbols.error} No \`homepage\` field found in package.json.`);
 				return {};
 			}
 
-			link = packageData.homepage;
+			link = homepage;
 		}
 	}
 

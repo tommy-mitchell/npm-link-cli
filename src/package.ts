@@ -8,7 +8,7 @@ export const getPackage = async (name: string) => {
 	} catch (error: any) {
 		if (error.code === "ENOTFOUND") {
 			console.error(`${logSymbols.error} No network connection detected!`);
-			process.exit(1); // eslint-disable-line unicorn/no-process-exit
+			process.exit(1);
 		}
 
 		if (error instanceof PackageNotFoundError) {
