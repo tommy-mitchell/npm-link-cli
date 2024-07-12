@@ -37,7 +37,7 @@
 		"build": "tsc -p tsconfig.build.json && execify --all",
 		"lint": "xo",
 		"format": "dprint fmt && xo --fix",
-		"test": "tsc --noEmit && c8 ava"
+		"test": "c8 ava"
 	},
 	"ava": {
 		"extensions": {
