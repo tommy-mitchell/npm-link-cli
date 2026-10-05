@@ -56,7 +56,7 @@
 		"c8": "^12.0.0",
 		"dprint": "^0.60.1",
 		"execify-cli": "^1.0.0",
-		"has-ansi": "^6.0.2",
+		"pretty-ansi": "^4.0.0",
 		"type-fest": "^5.10.0",
 		"typescript": "~6.0.3",
 		"xo": "^5.0.1"

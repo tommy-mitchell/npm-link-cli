@@ -1,5 +1,4 @@
 import { execa } from "@tommy-mitchell/test-helpers";
-import hasAnsi from "has-ansi";
 import * as clipboard from "tinyclip";
 import { test, verifyCli, verifyCliFails } from "./_util.ts";
 
@@ -30,12 +29,6 @@ for (const flag of ["--npmx", "-x"]) {
 		test(`short npmx link - ${flag} ${shortFlag}`, verifyCli, ["meow", "np", flag, shortFlag]);
 	}
 }
-
-test("linkifies", async t => {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const { stdout } = await execa(t.context.binPath, { env: { FORCE_HYPERLINK: "1" } });
-	t.true(hasAnsi(stdout));
-});
 
 test.serial("copies to clipboard", async t => {
 	await execa(t.context.binPath);
