@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import process from "node:process";
-import clipboard from "clipboardy";
 import meow from "meow";
 import { readPackageUp } from "read-package-up";
 import terminalLink from "terminal-link";
+import * as clipboard from "tinyclip";
 import { getLinks } from "./links.ts";
 import { log } from "./log.ts";
 import type { Link } from "./types.ts";
@@ -88,7 +88,7 @@ const lastLink = links.at(-1)?.link;
 
 if (lastLink && cli.input.length < 2) {
 	try {
-		await clipboard.write(lastLink);
+		await clipboard.writeText(lastLink);
 		console.log("");
 		log.success("Copied link to clipboard!");
 	} catch {}

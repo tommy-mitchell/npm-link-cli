@@ -1,6 +1,6 @@
 import { execa } from "@tommy-mitchell/test-helpers";
-import clipboard from "clipboardy";
 import hasAnsi from "has-ansi";
+import * as clipboard from "tinyclip";
 import { test, verifyCli, verifyCliFails } from "./_util.ts";
 
 test("single input - copies to clipboard", verifyCli, "meow");
@@ -39,7 +39,7 @@ test("linkifies", async t => {
 
 test.serial("copies to clipboard", async t => {
 	await execa(t.context.binPath);
-	const link = await clipboard.read();
+	const link = await clipboard.readText();
 	t.is(link, "https://www.npmjs.com/package/npm-link-cli");
 });
 
