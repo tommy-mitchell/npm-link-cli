@@ -4,9 +4,9 @@ import meow from "meow";
 import { readPackageUp } from "read-package-up";
 import terminalLink from "terminal-link";
 import * as clipboard from "tinyclip";
-import { getLinks } from "./links.ts";
-import { log } from "./log.ts";
-import type { Link } from "./types.ts";
+import { getLinks } from "./helpers/links.ts";
+import { log } from "./helpers/log.ts";
+import type { Link } from "./helpers/types.ts";
 
 // dprint-ignore
 const cli = meow(`

@@ -1,7 +1,7 @@
 import test from "ava";
 import { tq } from "@tommy-mitchell/test-helpers";
 import type { UnknownRecord } from "type-fest";
-import { getPackage } from "#src/package.ts";
+import { getPackage } from "#src/helpers/package.ts";
 import rootPackageJson from "../package.json" with { type: "json" };
 
 test("main", async t => {
@@ -15,11 +15,11 @@ test("returns undefined for non-existent packages", async t => {
 });
 
 const mockGetPackage = async (localMocks: UnknownRecord, globalMocks?: UnknownRecord) =>
-	tq.replace<typeof import("#src/package.ts")>({
+	tq.replace<typeof import("#src/helpers/package.ts")>({
 		globalMocks,
 		importMeta: import.meta,
 		localMocks,
-		modulePath: "#src/package.ts",
+		modulePath: "#src/helpers/package.ts",
 	});
 
 test("no network connection", async t => {

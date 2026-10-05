@@ -1,7 +1,7 @@
 import test from "ava";
 import type { FullVersion } from "package-json";
 import type { AsyncReturnType, UnknownRecord } from "type-fest";
-import { getGitHubLink } from "#src/github.ts";
+import { getGitHubLink } from "#src/helpers/github.ts";
 
 const isEmptyObject = (object: UnknownRecord) => Object.keys(object).length === 0;
 
