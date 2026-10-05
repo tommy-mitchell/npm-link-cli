@@ -1,0 +1,7 @@
+{
+	"includes": ["*", "**/*.{js,cjs,mjs,ts,cts,mts,json,jsonc,yml,yaml,md}"],
+	"extends": "node_modules/@tommy-mitchell/dprint-config/index.jsonc",
+	"json": {
+		"trailingCommas": "maintain",
+	},
+}

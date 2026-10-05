@@ -16,12 +16,16 @@ npm install --global npm-link-cli
 yarn global add npm-link-cli
 ```
 
+```sh
+pnpm add -g npm-link-cli
+```
+
 </p>
 </details>
 
 ## Usage
 
-```sh
+```txt
 $ npm-link --help
 
   Usage

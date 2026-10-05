@@ -1,12 +1,12 @@
-#!/usr/bin/env tsimp
+#!/usr/bin/env node
 import process from "node:process";
+import clipboard from "clipboardy";
+import logSymbols from "log-symbols";
 import meow from "meow";
 import { readPackageUp } from "read-package-up";
 import terminalLink from "terminal-link";
-import clipboard from "clipboardy";
-import logSymbols from "log-symbols";
-import { getPackage } from "./package.js";
-import { getGitHubLink } from "./github.js";
+import { getGitHubLink } from "./github.ts";
+import { getPackage } from "./package.ts";
 
 // dprint-ignore
 const cli = meow(`
@@ -33,27 +33,27 @@ const cli = meow(`
 	  $ npm-link ava --github
 	  ℹ ava: https://github.com/avajs/ava
 `, {
-	importMeta: import.meta,
 	description: false,
 	flags: {
-		help: {
+		github: {
+			shortFlag: "g",
 			type: "boolean",
+		},
+		help: {
 			shortFlag: "h",
+			type: "boolean",
 		},
 		short: {
-			type: "boolean",
 			shortFlag: "s",
-		},
-		github: {
 			type: "boolean",
-			shortFlag: "g",
 		},
 	},
+	importMeta: import.meta,
 });
 
 type Link = {
-	name: string;
 	link?: string;
+	name: string;
 };
 
 let shouldAddBreak = false;
@@ -67,20 +67,19 @@ const getLinks = async (names: string[]): Promise<Link[]> => (
 		}
 
 		if (cli.flags.github) {
-			const { link, didWarn } = await getGitHubLink(packageData);
+			const { didWarn, link } = await getGitHubLink(packageData);
 
 			if (didWarn) {
 				shouldAddBreak = true;
 			}
 
-			return { name, link };
+			return { link, name };
 		}
 
-		if (cli.flags.short) {
-			return { name, link: `https://npm.im/${name}` };
-		}
-
-		return { name, link: `https://www.npmjs.com/package/${name}` };
+		return {
+			link: `https://${cli.flags.short ? "npm.im" : "www.npmjs.com/package"}/${name}`,
+			name,
+		};
 	}))
 );
 
@@ -103,7 +102,7 @@ if (shouldAddBreak) {
 	console.log();
 }
 
-for (const { name, link } of links) {
+for (const { link, name } of links) {
 	if (!link) {
 		console.log(`${logSymbols.error} ${name}: No link found`);
 		continue;

@@ -1,11 +1,14 @@
+import { execa } from "@tommy-mitchell/test-helpers";
 import clipboard from "clipboardy";
-import { execa } from "execa";
 import hasAnsi from "has-ansi";
-import { test, verifyCli, verifyCliFails } from "./_util.js";
+import { test, verifyCli, verifyCliFails } from "./_util.ts";
 
 test("single input - copies to clipboard", verifyCli, "meow");
+
 test("no input - outputs current package and copies to clipboard", verifyCli, "");
+
 test("no input - not in project", verifyCliFails, "", { cwd: "/" }); // TODO: temp dir?
+
 test("multiple inputs", verifyCli, "meow np nnnope");
 
 for (const flag of ["--help", "-h"]) {

@@ -1,10 +1,10 @@
-import type { FullVersion } from "package-json";
 import githubUrlFromGit from "github-url-from-git";
 import isUrl from "is-url-superb";
 import logSymbols from "log-symbols";
+import type { FullVersion } from "package-json";
 
 // From https://github.com/sindresorhus/npm-home
-export const getGitHubLink = async ({ name, repository, homepage }: FullVersion) => {
+export const getGitHubLink = async ({ homepage, name, repository }: FullVersion) => {
 	if (!repository) {
 		return {};
 	}
@@ -15,7 +15,7 @@ export const getGitHubLink = async ({ name, repository, homepage }: FullVersion)
 	if (!link) {
 		link = repository.url;
 
-		if (isUrl(link) && /^https?:\/\//.test(link)) {
+		if (isUrl(link) && /^https?:\/\//v.test(link)) {
 			// dprint-ignore
 			console.error(`${logSymbols.error} The \`repository\` field in package.json should point to a Git repo and not a website. Please open an issue or pull request on \`${name}\`.`);
 			didWarn = true;
@@ -24,7 +24,7 @@ export const getGitHubLink = async ({ name, repository, homepage }: FullVersion)
 			console.error(`${logSymbols.error} The \`repository\` field in package.json is invalid. Please open an issue or pull request on \`${name}\`. Using the \`homepage\` field instead.`);
 			didWarn = true;
 
-			if (!homepage) {
+			if (!homepage) { // eslint-disable-line @typescript-eslint/strict-boolean-expressions
 				console.error(`${logSymbols.error} No \`homepage\` field found in package.json.`);
 				return {};
 			}
@@ -33,5 +33,5 @@ export const getGitHubLink = async ({ name, repository, homepage }: FullVersion)
 		}
 	}
 
-	return { link, didWarn };
+	return { didWarn, link };
 };

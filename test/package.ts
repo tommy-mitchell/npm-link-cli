@@ -1,8 +1,8 @@
 import anyTest, { type TestFn } from "ava";
-import esmock from "esmock";
+import { tq } from "@tommy-mitchell/test-helpers";
 import { type NormalizedPackageJson, readPackageUp } from "read-package-up";
 import type { UnknownRecord } from "type-fest";
-import { getPackage } from "../src/package.js";
+import { getPackage } from "#src/package.ts";
 
 const test = anyTest as TestFn<{
 	packageJson: NormalizedPackageJson;
@@ -24,27 +24,28 @@ test("returns undefined for non-existent packages", async t => {
 	t.is(packageJson, undefined);
 });
 
-const mockGetPackage = async (...mocks: UnknownRecord[]) =>
-	esmock<typeof import("../src/package.js")>( // eslint-disable-line @typescript-eslint/consistent-type-imports
-		"../src/package.js",
-		import.meta.url,
-		...mocks,
-	);
+const mockGetPackage = async (localMocks: UnknownRecord, globalMocks?: UnknownRecord) =>
+	tq.replace<typeof import("#src/package.ts")>({
+		globalMocks,
+		importMeta: import.meta,
+		localMocks,
+		modulePath: "#src/package.ts",
+	});
 
 test("no network connection", async t => {
 	const { getPackage: getPackageMock } = await mockGetPackage({
-		"package-json": { default: () => ({ code: "ENOTFOUND" }) },
-		"node:process": { // eslint-disable-line @typescript-eslint/naming-convention
-			exit: (code: number) => (
-				t.is(code, 1)
-			),
+		"node:process": {
+			exit: (code: number) => {
+				t.is(code, 1);
+			},
 		},
+		"package-json": { default: () => ({ code: "ENOTFOUND" }) },
 	}, {
 		import: {
 			console: {
-				error: (message: string) => (
-					t.is(message, "✖ No network connection detected!")
-				),
+				error: (message: string) => {
+					t.is(message, "✖ No network connection detected!");
+				},
 			},
 		},
 	});
