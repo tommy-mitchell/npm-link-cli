@@ -17,5 +17,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
+      # https://github.com/tinylibs/tinyclip/blob/76448e0b9e4b13897a3a4ae19222f6c5b6ec1b8f/.github/workflows/main.yml#L34-L35
+      - run: sudo apt-get update && sudo apt-get install -y xclip xvfb
       - run: npm install
-      - run: xvfb-run npm test # https://github.com/sindresorhus/clipboardy/issues/63#issuecomment-676484369
+      # https://github.com/sindresorhus/clipboardy/issues/63#issuecomment-676484369
+      - run: xvfb-run -a npm test
