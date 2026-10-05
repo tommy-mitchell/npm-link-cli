@@ -32,21 +32,22 @@ $ npm-link --help
     $ npm-link [package-name] […]
 
   Options
-    --short   -s  Output npm.im link
+    --short   -s  Output short link, if available
     --github  -g  Output GitHub link
+    --npmx    -x  Output npmx.dev link
 
   Examples
     Output link for current package
-    $ npm-link
-    ℹ npm-link-cli: https://www.npmjs.com/package/npm-link-cli
+    $ npm-link --short
+    ℹ npm-link-cli: https://npm.im/npm-link-cli
 
     $ npm-link meow np nnnope
     ℹ meow: https://www.npmjs.com/package/meow
     ℹ np: https://www.npmjs.com/package/np
     ✖ nnnope: No link found
 
-    $ npm-link tsd --short
-    ℹ tsd: https://npm.im/tsd
+    $ npm-link tsd -sx
+    ℹ tsd: https://npmx.dev/tsd
 
     $ npm-link ava --github
     ℹ ava: https://github.com/avajs/ava
