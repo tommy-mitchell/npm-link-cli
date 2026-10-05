@@ -8,5 +8,6 @@
 		"noEmit": true,
 		"types": ["node"],
 		"verbatimModuleSyntax": true,
+		"resolveJsonModule": true,
 	},
 }

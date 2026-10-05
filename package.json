@@ -41,18 +41,16 @@
 	],
 	"dependencies": {
 		"clipboardy": "^5.3.2",
-		"github-url-from-git": "^1.5.0",
-		"is-url-superb": "^6.1.0",
 		"log-symbols": "^7.0.1",
 		"meow": "^14.1.0",
 		"package-json": "^10.0.1",
 		"read-package-up": "^12.0.0",
+		"repo-url-from-package": "^1.0.0",
 		"terminal-link": "^5.0.0"
 	},
 	"devDependencies": {
 		"@tommy-mitchell/configs": "^0.1.0",
 		"@tommy-mitchell/test-helpers": "^0.1.0",
-		"@types/github-url-from-git": "^1.5.3",
 		"@types/node": "^22",
 		"ava": "^8.0.1",
 		"c8": "^12.0.0",

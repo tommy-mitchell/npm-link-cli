@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import process from "node:process";
 import clipboard from "clipboardy";
-import logSymbols from "log-symbols";
 import meow from "meow";
 import { readPackageUp } from "read-package-up";
 import terminalLink from "terminal-link";
-import { getGitHubLink } from "./github.ts";
-import { getPackage } from "./package.ts";
+import { getLinks } from "./links.ts";
+import { log } from "./log.ts";
+import type { Link } from "./types.ts";
 
 // dprint-ignore
 const cli = meow(`
@@ -14,21 +14,22 @@ const cli = meow(`
 	  $ npm-link [package-name] […]
 
 	Options
-	  --short   -s  Output npm.im link
+	  --short   -s  Output short link, if available
 	  --github  -g  Output GitHub link
+	  --npmx    -x  Output npmx.dev link
 
 	Examples
 	  Output link for current package
-	  $ npm-link
-	  ℹ npm-link-cli: https://www.npmjs.com/package/npm-link-cli
+	  $ npm-link --short
+	  ℹ npm-link-cli: https://npm.im/npm-link-cli
 
 	  $ npm-link meow np nnnope
 	  ℹ meow: https://www.npmjs.com/package/meow
 	  ℹ np: https://www.npmjs.com/package/np
 	  ✖ nnnope: No link found
 
-	  $ npm-link tsd --short
-	  ℹ tsd: https://npm.im/tsd
+	  $ npm-link tsd -sx
+	  ℹ tsd: https://npmx.dev/tsd
 
 	  $ npm-link ava --github
 	  ℹ ava: https://github.com/avajs/ava
@@ -43,6 +44,10 @@ const cli = meow(`
 			shortFlag: "h",
 			type: "boolean",
 		},
+		npmx: {
+			shortFlag: "x",
+			type: "boolean",
+		},
 		short: {
 			shortFlag: "s",
 			type: "boolean",
@@ -51,70 +56,40 @@ const cli = meow(`
 	importMeta: import.meta,
 });
 
-type Link = {
-	link?: string;
-	name: string;
-};
-
-let shouldAddBreak = false;
-
-const getLinks = async (names: string[]): Promise<Link[]> => (
-	Promise.all(names.map(async (name) => {
-		const packageData = await getPackage(name);
-
-		if (!packageData) {
-			return { name };
-		}
-
-		if (cli.flags.github) {
-			const { didWarn, link } = await getGitHubLink(packageData);
-
-			if (didWarn) {
-				shouldAddBreak = true;
-			}
-
-			return { link, name };
-		}
-
-		return {
-			link: `https://${cli.flags.short ? "npm.im" : "www.npmjs.com/package"}/${name}`,
-			name,
-		};
-	}))
-);
-
 let links: Link[];
 
 if (cli.input.length > 0) {
-	links = await getLinks(cli.input);
+	links = await getLinks(cli);
 } else {
 	const result = await readPackageUp();
 
 	if (!result) {
-		console.error(`${logSymbols.error} You must be in an npm package.`);
+		log.error("You must be in an npm package.");
 		process.exit(1);
 	}
 
-	links = await getLinks([result.packageJson.name]);
+	links = await getLinks({ ...cli, input: [result.packageJson.name] });
 }
 
-if (shouldAddBreak) {
-	console.log();
+for (const { link, name, warnings = [] } of links) {
+	if (link) {
+		const linkified = terminalLink(link, link, { fallback: () => link });
+		log.info(`${name}: ${linkified}`);
+	} else {
+		log.error(`${name}: No link found`);
+	}
+
+	for (const warning of warnings) {
+		log.warning(warning);
+	}
 }
 
-for (const { link, name } of links) {
-	if (!link) {
-		console.log(`${logSymbols.error} ${name}: No link found`);
-		continue;
-	}
+const lastLink = links.at(-1)?.link;
 
-	const linkified = terminalLink(link, link, { fallback: () => link });
-	console.log(`${logSymbols.info} ${name}: ${linkified}`);
-
-	if (cli.input.length < 2) {
-		try {
-			await clipboard.write(link); // eslint-disable-line no-await-in-loop
-			console.log(`\n${logSymbols.success} Copied link to clipboard!`);
-		} catch {}
-	}
+if (lastLink && cli.input.length < 2) {
+	try {
+		await clipboard.write(lastLink);
+		console.log("");
+		log.success("Copied link to clipboard!");
+	} catch {}
 }

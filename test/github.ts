@@ -1,9 +1,7 @@
-import { stripVTControlCharacters as stripAnsi } from "node:util";
 import test from "ava";
-import { tq } from "@tommy-mitchell/test-helpers";
 import type { FullVersion } from "package-json";
 import type { AsyncReturnType, UnknownRecord } from "type-fest";
-import type { getGitHubLink } from "#src/github.ts";
+import { getGitHubLink } from "#src/github.ts";
 
 const isEmptyObject = (object: UnknownRecord) => Object.keys(object).length === 0;
 
@@ -21,21 +19,7 @@ const verify = test.macro<MacroArgs>(async (t, { errorMessage = [], expected, ho
 	const errorMessages = Array.isArray(errorMessage) ? errorMessage : [errorMessage];
 	const logs: string[] = [];
 
-	const { getGitHubLink: getLink } = await tq.replace<typeof import("#src/github.ts")>({
-		globalMocks: {
-			import: {
-				console: {
-					error: (message: string) => {
-						logs.push(stripAnsi(message));
-					},
-				},
-			},
-		},
-		importMeta: import.meta,
-		modulePath: "#src/github.ts",
-	});
-
-	const result = await getLink({ homepage, name, repository } as FullVersion);
+	const result = await getGitHubLink({ homepage, name, repository } as FullVersion);
 
 	const assertions = await t.try(tt => {
 		if (isEmptyObject(expected)) {
@@ -51,14 +35,19 @@ const verify = test.macro<MacroArgs>(async (t, { errorMessage = [], expected, ho
 });
 
 test("no repository", verify, {
-	expected: {},
+	expected: {
+		link: undefined,
+		name: "foo",
+		warnings: undefined,
+	},
 	name: "foo",
 });
 
 test("valid repository", verify, {
 	expected: {
-		didWarn: false,
 		link: "https://github.com/tommy-mitchell/npm-link-cli",
+		name: "npm-link-cli",
+		warnings: [],
 	},
 	name: "npm-link-cli",
 	repository: {
@@ -67,11 +56,12 @@ test("valid repository", verify, {
 });
 
 test("invalid repository - points to website", verify, {
-	errorMessage:
-		"✖ The `repository` field in package.json should point to a Git repo and not a website. Please open an issue or pull request on `foo`.",
 	expected: {
-		didWarn: true,
 		link: "https://example.com",
+		name: "foo",
+		warnings: [
+			"The `repository` field in package.json should point to a Git repo and not a website. Please open an issue or pull request on `foo`.",
+		],
 	},
 	name: "foo",
 	repository: {
@@ -80,11 +70,12 @@ test("invalid repository - points to website", verify, {
 });
 
 test("invalid repository - invalid URL, fallback to homepage", verify, {
-	errorMessage:
-		"✖ The `repository` field in package.json is invalid. Please open an issue or pull request on `foo`. Using the `homepage` field instead.",
 	expected: {
-		didWarn: true,
 		link: "https://example.com",
+		name: "foo",
+		warnings: [
+			"The `repository` field in package.json is invalid. Please open an issue or pull request on `foo`.",
+		],
 	},
 	homepage: "https://example.com",
 	name: "foo",
@@ -94,11 +85,14 @@ test("invalid repository - invalid URL, fallback to homepage", verify, {
 });
 
 test("invalid repository - invalid URL, no homepage", verify, {
-	errorMessage: [
-		"✖ The `repository` field in package.json is invalid. Please open an issue or pull request on `foo`. Using the `homepage` field instead.",
-		"✖ No `homepage` field found in package.json.",
-	],
-	expected: {},
+	expected: {
+		link: undefined,
+		name: "foo",
+		warnings: [
+			"The `repository` field in package.json is invalid. Please open an issue or pull request on `foo`.",
+			"Tried falling back to `homepage` field, but none found in package.json.",
+		],
+	},
 	name: "foo",
 	repository: {
 		url: "foo",

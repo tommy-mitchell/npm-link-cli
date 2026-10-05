@@ -20,7 +20,15 @@ for (const flag of ["--short", "-s"]) {
 }
 
 for (const flag of ["--github", "-g"]) {
-	test(`GitHub link - ${flag}`, verifyCli, ["meow", "np", flag]);
+	test(`GitHub link - ${flag}`, verifyCli, ["meow", "babel-preset-minify", "nexts", flag]);
+}
+
+for (const flag of ["--npmx", "-x"]) {
+	test(`npmx link - ${flag}`, verifyCli, ["meow", "np", flag]);
+
+	for (const shortFlag of ["--short", "-s"]) {
+		test(`short npmx link - ${flag} ${shortFlag}`, verifyCli, ["meow", "np", flag, shortFlag]);
+	}
 }
 
 test("linkifies", async t => {

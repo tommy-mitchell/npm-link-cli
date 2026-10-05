@@ -1,22 +1,12 @@
-import anyTest, { type TestFn } from "ava";
+import test from "ava";
 import { tq } from "@tommy-mitchell/test-helpers";
-import { type NormalizedPackageJson, readPackageUp } from "read-package-up";
 import type { UnknownRecord } from "type-fest";
 import { getPackage } from "#src/package.ts";
-
-const test = anyTest as TestFn<{
-	packageJson: NormalizedPackageJson;
-}>;
-
-test.before("setup context", async t => {
-	const result = await readPackageUp();
-	t.truthy(result, "Not in an npm package!");
-	t.context.packageJson = result!.packageJson;
-});
+import rootPackageJson from "../package.json" with { type: "json" };
 
 test("main", async t => {
 	const packageJson = await getPackage("npm-link-cli");
-	t.like(packageJson, { version: t.context.packageJson.version });
+	t.like(packageJson, { version: rootPackageJson.version });
 });
 
 test("returns undefined for non-existent packages", async t => {
